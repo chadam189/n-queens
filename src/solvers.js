@@ -13,7 +13,8 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
-
+var globalCounter1 = 0;
+var globalCounter2 = 0;
 
 window.findNRooksSolution = function(n) {
   var solution = undefined;
@@ -129,14 +130,10 @@ window.countNRooksSolutions = function(n) {
       if (currentRow < n && currentCol < n) {
         // toggle the next spot on the board; if so, keep it and increment respective counters
         board.togglePiece(currentRow, currentCol);
-        if (board.hasAnyRooksConflicts()) {
-          board.togglePiece(currentRow, currentCol);
-        } else {
-          rookCounter++;
-          rookRowPositions[currentRow] = true;
-          rookColPositions[currentCol] = true;
-          rookPlacements[rookCounter] = [currentRow, currentCol];
-        }
+        rookCounter++;
+        rookRowPositions[currentRow] = true;
+        rookColPositions[currentCol] = true;
+        rookPlacements[rookCounter] = [currentRow, currentCol];
       }
     }
     
