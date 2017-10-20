@@ -163,7 +163,7 @@ window.findNQueensSolution = function(n) {
   var solution = null; 
   
   if (n === 0) {
-    return null;
+    return [];
   } 
   if (n === 1) {
     return [[1]];
@@ -208,6 +208,7 @@ window.findNQueensSolution = function(n) {
         currentCol = 0;
       }
       // check against col conflicts with existing pieces
+      
       while (queenColPositions.hasOwnProperty(currentCol.toString())) {
         if (currentCol === n - 1) {
           currentCol = 0;
@@ -222,6 +223,7 @@ window.findNQueensSolution = function(n) {
       if (currentRow < n && currentCol < n) {
         // toggle the next spot on the board; if so, keep it and increment respective counters
         board.togglePiece(currentRow, currentCol);
+        debugger;
         if (board.hasAnyMinorDiagonalConflicts() || board.hasAnyMajorDiagonalConflicts()) {
           board.togglePiece(currentRow, currentCol);
           if (currentCol === n - 1) {
@@ -265,8 +267,118 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
 
+  var solutions = []; 
+  var solutionCount = 0;
+  
+  if (n === 0 || n === 1) {
+    return 1;
+  } 
+
+  // start with new (blank) board of NxN size
+  var board = new Board ({n: n});
+  // place queen in starting spot
+  // initial value will be 0,0 via board.togglePiece(0, 0)
+  var queenRowPositions = {};
+  var queenColPositions = {};
+  var queenPlacements = {};
+  var queenCounter = 0;
+  
+  board.togglePiece(0, 0);
+  queenCounter++;
+  // add starting queen to queenPositions
+  //maybe debug here for string issues
+  queenRowPositions[0] = true;
+  queenColPositions[0] = true;
+  queenPlacements[queenCounter] = [0, 0];
+  
+  // initialize currR and currC for the next piece
+  var currentRow = 1;
+  var currentCol = 1;
+  
+  //single move loop
+  // while ((queenCounter !== 0 || currentRow < n) && (queenCounter >= 0 || (queenPlacements[1][0] !== 0))) {
+  while (queenCounter !== 0 || currentRow < n) {
+    // q
+    //check if current set up is solution
+    if (queenCounter === n) {
+      solutionCount++;
+      // solutions.push(board.rows());
+      board.togglePiece(currentRow, currentCol);
+      delete queenRowPositions[currentRow];
+      delete queenColPositions[currentCol];
+      delete queenPlacements[queenCounter];
+      queenCounter--;
+      if (currentCol === n - 1) {
+        currentCol = 0;
+        currentRow++;
+      } else {
+        currentCol++;
+      }
+    }
+    
+    //check if current spot is in bounds
+    if (currentRow < n && currentCol < n) {
+      // check against row conflicts with existing pieces
+      while (queenRowPositions.hasOwnProperty(currentRow.toString())) {
+        currentRow++;
+        currentCol = 0;
+      }
+      // check against col conflicts with existing pieces
+      while (queenColPositions.hasOwnProperty(currentCol.toString())) {
+        if (currentCol === n - 1) {
+          currentCol = 0;
+          currentRow++;
+        } else {
+          currentCol++;
+        }
+      }
+      
+      
+      //this is where we check to toggle stuff
+      if (currentRow < n && currentCol < n) {
+        // toggle the next spot on the board; if so, keep it and increment respective counters
+        board.togglePiece(currentRow, currentCol);
+        // if (board.hasAnyMinorDiagonalConflicts() || board.hasAnyMajorDiagonalConflicts()) {
+        if (board.hasMinorDiagonalConflictAt(currentRow + currentCol) || board.hasMajorDiagonalConflictAt(currentCol - currentRow)) {          
+          board.togglePiece(currentRow, currentCol);
+          if (currentCol === n - 1) {
+            currentCol = 0;
+            currentRow++;
+          } else {
+            currentCol++;
+          }
+        } else {
+          queenCounter++;
+          queenRowPositions[currentRow] = true;
+          queenColPositions[currentCol] = true;
+          queenPlacements[queenCounter] = [currentRow, currentCol];
+        }
+      }
+    }
+    
+    //maybe debug here -- check if current spot is off the board
+    if (currentRow === n && queenCounter > 0) {
+      currentRow = queenPlacements[queenCounter][0];
+      currentCol = queenPlacements[queenCounter][1];
+      board.togglePiece(currentRow, currentCol);
+      delete queenRowPositions[currentRow];
+      delete queenColPositions[currentCol];
+      delete queenPlacements[queenCounter];
+      queenCounter--;
+      if (currentCol === n - 1) {
+        currentCol = 0;
+        currentRow++;
+      } else {
+        currentCol++;
+      }
+    }
+    
+  }
+  
+  
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
+  
+
 };

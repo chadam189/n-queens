@@ -30,6 +30,13 @@ describe('solvers', function() {
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
     });
+    // it('finds the number of valid solutions for n of 9', function() {
+    //   var n = 8;
+    //   var solutionCount = countNRooksSolutions(n);
+    //   var expectedSolutionCount = 362880;
+
+    //   expect(solutionCount).to.be.equal(expectedSolutionCount);
+    // });
 
   });
 
@@ -81,3 +88,4 @@ describe('solvers', function() {
   });
 
 });
+

@@ -187,7 +187,7 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      if (minorDiagonalColumnIndexAtFirstRow > this.attributes.n + 1 || minorDiagonalColumnIndexAtFirstRow <= 0 ) {
+      if (minorDiagonalColumnIndexAtFirstRow > (this.attributes.n * 2) - 3 || minorDiagonalColumnIndexAtFirstRow <= 0 ) {
         return false;
       }
       
@@ -195,13 +195,16 @@
       var currentColumn = null;
             
       if (minorDiagonalColumnIndexAtFirstRow >= this.attributes.n) {
-        currentRow = minorDiagonalColumnIndexAtFirstRow - 2;
+        //we changed this below from 1 to 3
+        currentRow = minorDiagonalColumnIndexAtFirstRow - this.attributes.n + 1;
         currentColumn = this.attributes.n - 1;
       } else {
         currentRow = 0;
         currentColumn = minorDiagonalColumnIndexAtFirstRow;
       }
-      
+      // console.log('currentRow:', currentRow);
+      // console.log('currentColumn:', currentColumn);
+      // console.log('this.rows:', this.rows());
       var currentSpot = this.rows()[currentRow][currentColumn];
       var count = 0;
       var bound = this.attributes.n;
@@ -220,10 +223,26 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      var bound = this.attributes.n + 1;
-      for (var i = 1; i <= bound; i++) {
-        if (this.hasMinorDiagonalConflictAt(i)) {
+      var bound = (this.attributes.n * 2) - 3;
+      if (this.attributes.n === 2) {
+        if (this.attributes[0][1] === this.attributes[1][0]) {
           return true;
+        }
+      } else if (this.attributes.n === 3) {
+        if (this.attributes[0][1] === this.attributes[1][0]) {
+          return true;
+        }
+        if (this.attributes[1][2] === this.attributes[2][1]) {
+          return true;
+        }
+        if (this.hasMinorDiagonalConflictAt(2)) {
+          return true;
+        }
+      } else {
+        for (var i = 1; i <= bound; i++) {
+          if (this.hasMinorDiagonalConflictAt(i)) {
+            return true;
+          }
         }
       }
       return false;
